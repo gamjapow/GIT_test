@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 샘플 계약(WSDL). 실제 WSDL이 있으면 이 파일만 교체하면 됩니다. -->
+<wsdl:definitions name="UserService"
+    targetNamespace="http://example.com/user"
+    xmlns:tns="http://example.com/user"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://example.com/user" elementFormDefault="qualified">
+      <xsd:complexType name="User">
+        <xsd:sequence>
+          <xsd:element name="id"    type="xsd:long"/>
+          <xsd:element name="name"  type="xsd:string"/>
+          <xsd:element name="email" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:element name="GetUserRequest">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="id" type="xsd:long"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetUserResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="user" type="tns:User"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="CreateUserRequest">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="name"  type="xsd:string"/>
+          <xsd:element name="email" type="xsd:string"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="CreateUserResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="user" type="tns:User"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="UserNotFoundFault">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="id"      type="xsd:long"/>
+          <xsd:element name="message" type="xsd:string"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </wsdl:types>
+
+  <wsdl:message name="GetUserRequest"><wsdl:part name="parameters" element="tns:GetUserRequest"/></wsdl:message>
+  <wsdl:message name="GetUserResponse"><wsdl:part name="parameters" element="tns:GetUserResponse"/></wsdl:message>
+  <wsdl:message name="CreateUserRequest"><wsdl:part name="parameters" element="tns:CreateUserRequest"/></wsdl:message>
+  <wsdl:message name="CreateUserResponse"><wsdl:part name="parameters" element="tns:CreateUserResponse"/></wsdl:message>
+  <wsdl:message name="UserNotFoundFault"><wsdl:part name="fault" element="tns:UserNotFoundFault"/></wsdl:message>
+
+  <wsdl:portType name="UserPortType">
+    <wsdl:operation name="GetUser">
+      <wsdl:input  message="tns:GetUserRequest"/>
+      <wsdl:output message="tns:GetUserResponse"/>
+      <wsdl:fault  name="UserNotFoundFault" message="tns:UserNotFoundFault"/>
+    </wsdl:operation>
+    <wsdl:operation name="CreateUser">
+      <wsdl:input  message="tns:CreateUserRequest"/>
+      <wsdl:output message="tns:CreateUserResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+
+  <wsdl:binding name="UserSoapBinding" type="tns:UserPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="GetUser">
+      <soap:operation soapAction="http://example.com/user/GetUser"/>
+      <wsdl:input><soap:body use="literal"/></wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+      <wsdl:fault name="UserNotFoundFault"><soap:fault name="UserNotFoundFault" use="literal"/></wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CreateUser">
+      <soap:operation soapAction="http://example.com/user/CreateUser"/>
+      <wsdl:input><soap:body use="literal"/></wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+
+  <wsdl:service name="UserService">
+    <wsdl:port name="UserPort" binding="tns:UserSoapBinding">
+      <soap:address location="http://localhost:8080/ws/user"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
